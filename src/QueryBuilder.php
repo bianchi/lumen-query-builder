@@ -48,11 +48,11 @@ class QueryBuilder extends Builder
 
         $this->request = $request ?? request();
 
-        if ($this->request->fields()->isNotEmpty()) {
+        if (!empty($this->request->get('fields'))) {
             $this->parseSelectedFields();
         }
 
-        if ($this->request->sorts()->isNotEmpty()) {
+        if (!empty($this->request->get('sorts'))) {
             $this->allowedSorts('*');
         }
     }
@@ -109,7 +109,7 @@ class QueryBuilder extends Builder
 
         $this->guardAgainstUnknownFilters();
 
-        $this->addFiltersToQuery($this->request->filters());
+        $this->addFiltersToQuery(new Collection($this->request->get('filters')));
 
         return $this;
     }
@@ -140,7 +140,7 @@ class QueryBuilder extends Builder
     {
         $this->defaultSort = $sort;
 
-        $this->addSortsToQuery($this->request->sorts($this->defaultSort));
+//         $this->addSortsToQuery($this->request->sorts($this->defaultSort));
 
         return $this;
     }
@@ -148,8 +148,8 @@ class QueryBuilder extends Builder
     public function allowedSorts($sorts) : self
     {
         $sorts = is_array($sorts) ? $sorts : func_get_args();
-        if (! $this->request->sorts()) {
-            return $this;
+         if (! $this->request->get('sorts')) {
+             return $this;
         }
 
         $this->allowedSorts = collect($sorts);
@@ -158,7 +158,7 @@ class QueryBuilder extends Builder
             $this->guardAgainstUnknownSorts();
         }
 
-        $this->addSortsToQuery($this->request->sorts($this->defaultSort));
+//         $this->addSortsToQuery($this->request->sorts($this->defaultSort));
 
         return $this;
     }
@@ -201,8 +201,8 @@ class QueryBuilder extends Builder
 
     protected function parseSelectedFields()
     {
-        $this->fields = $this->request->fields();
-
+         $this->fields = new Collection($this->request->get('fields'));
+        
         $modelTableName = $this->getModel()->getTable();
         $modelFields = $this->fields->get($modelTableName, ['*']);
 
@@ -314,7 +314,7 @@ class QueryBuilder extends Builder
 
     protected function guardAgainstUnknownFilters()
     {
-        $filterNames = $this->request->filters()->keys();
+        $filterNames = (new Collection($this->request->get('filters')))->keys();
 
         $allowedFilterNames = $this->allowedFilters->map->getProperty();
 
@@ -327,7 +327,7 @@ class QueryBuilder extends Builder
 
     protected function guardAgainstUnknownFields()
     {
-        $fields = $this->request->fields()
+        $fields = (new Collection($this->request->get('fields')))
             ->map(function ($fields, $model) {
                 $tableName = snake_case(preg_replace('/-/', '_', $model));
 
@@ -347,7 +347,7 @@ class QueryBuilder extends Builder
 
     protected function guardAgainstUnknownSorts()
     {
-        $sorts = $this->request->sorts()->map(function ($sort) {
+        $sorts = (new Collection($this->request->get('sorts')))->map(function ($sort) {
             return ltrim($sort, '-');
         });
 
