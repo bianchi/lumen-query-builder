@@ -1,5 +1,5 @@
 {
-    "name": "psenna/laravel-query-builder",
+    "name": "psenna/lumen-query-builder",
     "description": "Easily build Eloquent queries from API requests",
     "keywords": [
         "spatie",
