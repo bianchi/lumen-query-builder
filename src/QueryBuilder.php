@@ -181,7 +181,7 @@ class QueryBuilder extends Builder
 
         $this->guardAgainstUnknownIncludes();
 
-        $this->addIncludesToQuery($this->request->includes());
+        $this->addIncludesToQuery(new Collection(explode(',', $this->request->get('includes'))));
 
         return $this;
     }
@@ -360,7 +360,7 @@ class QueryBuilder extends Builder
 
     protected function guardAgainstUnknownIncludes()
     {
-        $includes = $this->request->includes();
+        $includes = new Collection(explode(',', $this->request->get('includes')));
 
         $diff = $includes->diff($this->allowedIncludes);
 
