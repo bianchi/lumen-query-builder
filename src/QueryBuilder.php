@@ -158,7 +158,7 @@ class QueryBuilder extends Builder
             $this->guardAgainstUnknownSorts();
         }
 
-//         $this->addSortsToQuery($this->request->sorts($this->defaultSort));
+         $this->addSortsToQuery(new Collection($this->request->get('sorts')));
 
         return $this;
     }
