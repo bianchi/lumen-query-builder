@@ -158,7 +158,7 @@ class QueryBuilder extends Builder
             $this->guardAgainstUnknownSorts();
         }
 
-         $this->addSortsToQuery(new Collection($this->request->get('sorts')));
+         $this->addSortsToQuery(new Collection($this->request->get('sorts') ? explode(',', $this->request->get('sorts')) : null));
 
         return $this;
     }
@@ -181,7 +181,7 @@ class QueryBuilder extends Builder
 
         $this->guardAgainstUnknownIncludes();
 
-        $this->addIncludesToQuery(new Collection(explode(',', $this->request->get('includes'))));
+        $this->addIncludesToQuery(new Collection($this->request->get('includes') ? explode(',', $this->request->get('includes')) : $this->request->get('includes')));
 
         return $this;
     }
@@ -347,7 +347,7 @@ class QueryBuilder extends Builder
 
     protected function guardAgainstUnknownSorts()
     {
-        $sorts = (new Collection($this->request->get('sorts')))->map(function ($sort) {
+        $sorts = (new Collection($this->request->get('sorts') ? explode(',', $this->request->get('sorts')) : null))->map(function ($sort) {
             return ltrim($sort, '-');
         });
 
@@ -360,7 +360,7 @@ class QueryBuilder extends Builder
 
     protected function guardAgainstUnknownIncludes()
     {
-        $includes = new Collection(explode(',', $this->request->get('includes')));
+        $includes = new Collection($this->request->get('includes') ? explode(',', $this->request->get('includes')) : null);
 
         $diff = $includes->diff($this->allowedIncludes);
 
