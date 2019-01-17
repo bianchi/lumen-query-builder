@@ -48,7 +48,7 @@ class QueryBuilder extends Builder
 
         $this->request = $request ?? request();
 
-        if (!empty($this->request->get('field'))) {
+        if (!empty($this->request->get('fields'))) {
             $this->parseSelectedFields();
         }
 
@@ -201,7 +201,7 @@ class QueryBuilder extends Builder
 
     protected function parseSelectedFields()
     {
-         $this->fields = new Collection($this->request->get('field'));
+         $this->fields = new Collection($this->request->get('fields'));
         
         $modelTableName = $this->getModel()->getTable();
         $modelFields = $this->fields->get($modelTableName, ['*']);
@@ -327,7 +327,7 @@ class QueryBuilder extends Builder
 
     protected function guardAgainstUnknownFields()
     {
-        $fields = (new Collection($this->request->get('field')))
+        $fields = (new Collection($this->request->get('fields')))
             ->map(function ($fields, $model) {
                 $tableName = snake_case(preg_replace('/-/', '_', $model));
 
