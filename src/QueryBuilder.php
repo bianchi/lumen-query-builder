@@ -129,9 +129,9 @@ class QueryBuilder extends Builder
                 return $fieldName;
             });
 
-        if (! $this->allowedFields->contains('*')) {
-            $this->guardAgainstUnknownFields();
-        }
+//        if (! $this->allowedFields->contains('*')) {
+//            $this->guardAgainstUnknownFields();
+//        }
 
         return $this;
     }
@@ -201,8 +201,15 @@ class QueryBuilder extends Builder
 
     protected function parseSelectedFields()
     {
-         $this->fields = new Collection($this->request->get('fields'));
+        $fields = $this->request->get('fields');
+
+
+        foreach ($fields as $key => $value) {
+            $newFields[$key] = explode(',', $value);
+        }
         
+        $this->fields = new Collection($newFields);
+
         $modelTableName = $this->getModel()->getTable();
         $modelFields = $this->fields->get($modelTableName, ['*']);
 
@@ -284,7 +291,6 @@ class QueryBuilder extends Builder
                 return $relatedTables
                     ->mapWithKeys(function ($table, $key) use ($relatedTables) {
                         $fields = $this->getFieldsForRelatedTable(snake_case($table));
-
                         $fullRelationName = $relatedTables->slice(0, $key + 1)->implode('.');
 
                         if (empty($fields)) {
